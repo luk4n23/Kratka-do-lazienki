@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Kratka narożna — obudowa pionu instalacyjnego. DC01 1,5 mm, jeden element gięty, perforacja ⌀16. Interaktywny podgląd 3D.">
+<meta property="og:title" content="Kratka narożna — obudowa pionu">
+<meta property="og:description" content="DC01 1,5 mm, jeden element gięty, perforacja ⌀16, malowanie RAL 9003.">
+<meta property="og:type" content="website">
+<style>
+  :root{color-scheme:light}
+  *{box-sizing:border-box}
+  body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+</style>
+<title>Obudowa pionu DC01</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+</head>
+<body>
+<style>
+/* Layout: pełnoekranowa scena 3D, szyna parametrów po prawej, przyciski u dołu */
+:root{
+  --tlo:#eceef0; --plyta:#ffffff; --tekst:#14181c; --tekst-cichy:#5d6872;
+  --kreska:#ccd3d9; --akcent:#e91b23;
+  --font-ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-dane:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --tlo:#0f1317; --plyta:#171c22; --tekst:#e7ecf1; --tekst-cichy:#97a3ae;
+  --kreska:#2b333b; --akcent:#ff4a50; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --tlo:#0f1317; --plyta:#171c22; --tekst:#e7ecf1; --tekst-cichy:#97a3ae;
+  --kreska:#2b333b; --akcent:#ff4a50; color-scheme:dark;}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--tlo);color:var(--tekst);font-family:var(--font-ui);margin:0;overflow:hidden}
+#scena{position:fixed;inset:0;touch-action:none}
+#scena canvas{display:block}
+.naglowek{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:5;
+  padding-block:10px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  background:linear-gradient(to bottom,var(--tlo),transparent);pointer-events:none}
+.naglowek h1{margin:0;font-size:1rem;font-weight:600}
+.naglowek p{margin:0;font-size:.78rem;color:var(--tekst-cichy);font-family:var(--font-dane)}
+.sterowanie{position:fixed;left:max(16px,env(safe-area-inset-left,0px));
+  bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:6;
+  display:flex;gap:7px;flex-wrap:wrap;max-width:calc(100% - 32px)}
+button{font:500 .78rem/1 var(--font-ui);color:var(--tekst);background:var(--plyta);
+  border:1px solid var(--kreska);border-radius:7px;padding:8px 11px;cursor:pointer}
+button:hover{border-color:var(--tekst-cichy)}
+button[aria-pressed="true"]{background:var(--akcent);border-color:var(--akcent);color:#fff}
+button:focus-visible{outline:2px solid var(--akcent);outline-offset:2px}
+.szyna{position:fixed;top:calc(56px + env(safe-area-inset-top,0px));
+  right:max(16px,env(safe-area-inset-right,0px));z-index:5;width:252px;
+  max-width:calc(100vw - 32px);background:var(--plyta);border:1px solid var(--kreska);
+  border-radius:10px;padding:13px 15px;max-height:calc(100vh - 150px);overflow-y:auto}
+.szyna h2{margin:0 0 9px;font-size:.68rem;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--tekst-cichy)}
+.szyna h2:not(:first-child){margin-top:16px;padding-top:13px;border-top:1px solid var(--kreska)}
+.wiersz{display:flex;justify-content:space-between;gap:10px;font-size:.79rem;padding:2.5px 0}
+.wiersz span:first-child{color:var(--tekst-cichy);min-width:0}
+.wiersz span:last-child{font-family:var(--font-dane);font-variant-numeric:tabular-nums;
+  white-space:nowrap;font-weight:500}
+.nota{margin:11px 0 0;font-size:.72rem;line-height:1.45;color:var(--tekst-cichy)}
+.ladowanie{position:fixed;inset:0;display:grid;place-items:center;z-index:9;
+  background:var(--tlo);font-family:var(--font-dane);font-size:.8rem;color:var(--tekst-cichy)}
+@media (max-width:760px){
+  .szyna{position:static;width:auto;border-radius:0;border-left:0;border-right:0;max-height:none}
+  .owijka{position:fixed;left:0;right:0;z-index:5;max-height:48vh;overflow-y:auto;
+    bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+  .szyna{border-top:1px solid var(--kreska)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.pobierz{position:fixed;right:max(16px,env(safe-area-inset-right,0px));
+  bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:6;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;
+  max-width:calc(100% - 32px)}
+.pobierz-tyt{display:none}
+.pobierz a{font:500 .78rem/1 var(--font-ui);color:var(--tekst);background:var(--plyta);
+  border:1px solid var(--kreska);border-radius:7px;padding:8px 11px;text-decoration:none}
+.pobierz a:hover{border-color:var(--tekst-cichy)}
+.pobierz a:focus-visible{outline:2px solid var(--akcent);outline-offset:2px}
+@media (max-width:900px){
+  .pobierz{position:static;justify-content:flex-start;padding:0;margin-top:16px;
+    padding-top:13px;border-top:1px solid var(--kreska)}
+  .pobierz-tyt{display:block;width:100%;margin:0 0 9px;font-size:.68rem;font-weight:600;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--tekst-cichy)}
+  .pobierz a{flex:1 1 auto;text-align:center}
+}
+</style>
+
+<div id="scena"></div>
+<div class="ladowanie" id="ladowanie">wczytywanie modelu…</div>
+
+
+
+<header class="naglowek">
+  <h1>Kratka narożna — obudowa pionu</h1>
+  <p>DC01 1,5 mm · jeden element gięty · RAL 9003</p>
+</header>
+
+<div class="owijka">
+<aside class="szyna">
+  <h2>Gabaryt po gięciu</h2>
+  <div class="wiersz"><span>szerokość</span><span>140 mm</span></div>
+  <div class="wiersz"><span>głębokość</span><span>90 mm</span></div>
+  <div class="wiersz"><span>wysokość</span><span>2430 mm</span></div>
+  <div class="wiersz"><span>lico</span><span>100 mm</span></div>
+
+  <h2>Rozwinięcie</h2>
+  <div class="wiersz"><span>blacha</span><span>DC01 1,5 mm</span></div>
+  <div class="wiersz"><span>arkusz</span><span>309,57 × 2430</span></div>
+  <div class="wiersz"><span>masa</span><span>6,76 kg</span></div>
+
+  <h2>Perforacja</h2>
+  <div class="wiersz"><span>otwór</span><span>⌀16 mm</span></div>
+  <div class="wiersz"><span>podziałka</span><span>23 mm, 60°</span></div>
+  <div class="wiersz"><span>mostek</span><span>7,0 mm</span></div>
+  <div class="wiersz"><span>otworów</span><span>885 szt.</span></div>
+  <div class="wiersz"><span>pow. otwarta</span><span>38 %</span></div>
+
+  <h2>Gięcie</h2>
+  <div class="wiersz"><span>liczba gięć</span><span>4 × 90°</span></div>
+  <div class="wiersz"><span>R wewnętrzny</span><span>1,5 mm</span></div>
+  <div class="wiersz"><span>odstęp perf.</span><span>12,7 mm</span></div>
+
+  <h2>Cięcie i montaż</h2>
+  <div class="wiersz"><span>długość cięcia</span><span>50,2 m</span></div>
+  <div class="wiersz"><span>przebić</span><span>900</span></div>
+  <div class="wiersz"><span>otwory ⌀6,5</span><span>14 szt.</span></div>
+  <p class="nota">Kołnierze przyścienne przykręcane do muru. Lico i oba boki
+    perforowane; perforacja kończy się 12,7 mm przed każdym narożem,
+    więc gięcie jej nie deformuje.</p>
+</aside>
+<div class="pobierz">
+  <span class="pobierz-tyt">Pliki produkcyjne</span>
+  <a href="pliki/kratka-naroznik_rysunek-techniczny_DC01.pdf">Rysunek techniczny (PDF)</a>
+  <a href="pliki/kratka-naroznik_gr1.5mm_1szt_DC01.pdf">Podgląd detalu (PDF)</a>
+  <a href="pliki/kratka-naroznik_gr1.5mm_1szt_DC01.dxf" download>Rozwinięcie do cięcia (DXF)</a>
+</div>
+</div>
+
+<div class="sterowanie">
+  <button id="bSciana" aria-pressed="true">Ściana</button>
+  <button id="bWkrety" aria-pressed="true">Wkręty</button>
+  <button id="bPerf" aria-pressed="true">Perforacja</button>
+  <button id="bGora" aria-pressed="false">Zbliżenie naroża</button>
+  <button id="bReset">Reset widoku</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+"use strict";
+var el=document.getElementById('ladowanie');
+if(!window.THREE){el.textContent='nie udało się wczytać biblioteki 3D';return;}
+var T=1.5,H=2430,FRONT=100,BOK=90,KOL=20,ODG=12,MY=35;
+var DO=16,PZ=23,ROW=PZ*Math.sqrt(3)/2,TILEW=PZ,TILEH=2*ROW;
+var SCI_Y=[],i; for(i=0;i<7;i++) SCI_Y.push(100+i*(H-200)/6);
+
+var host=document.getElementById('scena');
+var ren=new THREE.WebGLRenderer({antialias:true});
+ren.setPixelRatio(Math.min(devicePixelRatio||1,2));
+ren.setSize(innerWidth,innerHeight);
+host.appendChild(ren.domElement);
+
+var scena=new THREE.Scene();
+var ciemny=(matchMedia('(prefers-color-scheme:dark)').matches &&
+  document.documentElement.getAttribute('data-theme')!=='light') ||
+  document.documentElement.getAttribute('data-theme')==='dark';
+scena.background=new THREE.Color(ciemny?0x0f1317:0xe4e8ec);
+
+var kam=new THREE.PerspectiveCamera(32,innerWidth/innerHeight,10,30000);
+var CEL=new THREE.Vector3(70,1215,45);
+var START={r:4700,th:0.92,ph:1.22};
+var orb={r:START.r,th:START.th,ph:START.ph};
+function ustawKam(){
+  kam.position.set(CEL.x+orb.r*Math.sin(orb.ph)*Math.sin(orb.th),
+                   CEL.y+orb.r*Math.cos(orb.ph),
+                   CEL.z+orb.r*Math.sin(orb.ph)*Math.cos(orb.th));
+  kam.lookAt(CEL);
+}
+ustawKam();
+scena.add(new THREE.HemisphereLight(0xdfe8f2,0x39404a,ciemny?0.70:0.88));
+var sl=new THREE.DirectionalLight(0xffffff,ciemny?1.05:0.90);
+sl.position.set(1700,2800,2400); scena.add(sl);
+var sl2=new THREE.DirectionalLight(0xc8d8ea,0.32);
+sl2.position.set(-1900,1000,1600); scena.add(sl2);
+
+/* ---- alphaMap perforacji: biały = materiał, czarny = otwór ---- */
+function teksturaOtw(){
+  var PX=20,c=document.createElement('canvas');
+  c.width=Math.round(TILEW*PX); c.height=Math.round(TILEH*PX);
+  var g=c.getContext('2d');
+  g.fillStyle='#fff'; g.fillRect(0,0,c.width,c.height);
+  g.fillStyle='#000';
+  for(var j=-2;j<=3;j++) for(var k=-2;k<=3;k++){
+    var cx=(k*PZ+((j&1)?PZ/2:0))*PX, cy=(j*ROW)*PX;
+    g.beginPath(); g.arc(cx,cy,DO/2*PX,0,Math.PI*2); g.fill();
+  }
+  var t=new THREE.CanvasTexture(c);
+  t.wrapS=t.wrapT=THREE.RepeatWrapping;
+  t.anisotropy=ren.capabilities.getMaxAnisotropy?ren.capabilities.getMaxAnisotropy():4;
+  return t;
+}
+var TEX=teksturaOtw();
+var LAK={color:ciemny?0xe9ecee:0xf4f5f3,metalness:0.04,roughness:0.62};
+function matPelny(){return new THREE.MeshStandardMaterial(LAK);}
+function matPerf(w,h){
+  var t=TEX.clone(); t.needsUpdate=true; t.repeat.set(w/TILEW,h/TILEH);
+  var m=new THREE.MeshStandardMaterial(LAK);
+  m.alphaMap=t; m.alphaTest=0.5; m.side=THREE.DoubleSide;
+  return m;
+}
+/* płyta w lokalnym XY, grubość w Z, opcjonalne pole perforacji [x0,y0,x1,y1] */
+function plyta(w,h,perf){
+  var gr=new THREE.Group();
+  function kostka(x0,y0,x1,y1,dziurawa){
+    var bw=x1-x0,bh=y1-y0;
+    if(bw<=0.01||bh<=0.01) return;
+    var mat;
+    if(dziurawa){var p=matPerf(bw,bh),s=matPelny(); mat=[s,s,s,s,p,p];}
+    else mat=matPelny();
+    var m=new THREE.Mesh(new THREE.BoxGeometry(bw,bh,T),mat);
+    m.position.set(x0+bw/2-w/2,y0+bh/2-h/2,0);
+    gr.add(m);
+  }
+  if(!perf){kostka(0,0,w,h,false);}
+  else{
+    kostka(perf[0],perf[1],perf[2],perf[3],true);
+    kostka(0,0,perf[0],h,false);
+    kostka(perf[2],0,w,h,false);
+    kostka(perf[0],0,perf[2],perf[1],false);
+    kostka(perf[0],perf[3],perf[2],h,false);
+  }
+  return gr;
+}
+
+var kratka=new THREE.Group(); scena.add(kratka);
+/* LICO: x 20..120, z = 90 */
+var lico=plyta(FRONT,H,[ODG,MY,FRONT-ODG,H-MY]);
+lico.position.set(20+FRONT/2,H/2,90-T/2);
+kratka.add(lico);
+/* BOKI: płaszczyzna YZ, z 0..90 */
+[[20+T/2,-1],[120-T/2,1]].forEach(function(p){
+  var b=plyta(BOK,H,[ODG,MY,BOK-ODG,H-MY]);
+  b.rotation.y=Math.PI/2;
+  b.position.set(p[0],H/2,45);
+  kratka.add(b);
+});
+/* KOŁNIERZE przyścienne: x 0..20 i 120..140, przy ścianie */
+[10,130].forEach(function(xx){
+  var k=plyta(KOL,H,null);
+  k.position.set(xx,H/2,T/2);
+  kratka.add(k);
+});
+/* wkręty montażowe */
+var gWkr=new THREE.Group(); kratka.add(gWkr);
+var matWkr=new THREE.MeshStandardMaterial({color:0x8e959b,metalness:0.45,roughness:0.5});
+var geoWkr=new THREE.CylinderGeometry(5.5,5.5,2.4,16);
+SCI_Y.forEach(function(y){
+  [10,130].forEach(function(x){
+    var m=new THREE.Mesh(geoWkr,matWkr);
+    m.rotation.x=Math.PI/2; m.position.set(x,y,T+1.2); gWkr.add(m);
+  });
+});
+
+/* ---- ściana i podłoga ---- */
+function kafle(a,b,n,px){
+  var c=document.createElement('canvas'); c.width=c.height=px;
+  var g=c.getContext('2d'); g.fillStyle=b; g.fillRect(0,0,px,px);
+  var s=px/n,f=Math.max(1,px/240); g.fillStyle=a;
+  for(var i=0;i<n;i++) for(var j=0;j<n;j++) g.fillRect(i*s+f,j*s+f,s-2*f,s-2*f);
+  var t=new THREE.CanvasTexture(c); t.wrapS=t.wrapT=THREE.RepeatWrapping; return t;
+}
+var gSciana=new THREE.Group(); scena.add(gSciana);
+var tS=kafle(ciemny?'#1b4245':'#3f7d82',ciemny?'#12292b':'#2a5a5e',4,256);
+tS.repeat.set(10,13);
+gSciana.add(function(){
+  var m=new THREE.Mesh(new THREE.PlaneGeometry(2600,3400),
+    new THREE.MeshStandardMaterial({map:tS,roughness:0.55,metalness:0.02}));
+  m.position.set(70,1700,-1); return m;}());
+var tP=kafle(ciemny?'#343a40':'#8e959b',ciemny?'#262b30':'#767d83',3,256);
+tP.repeat.set(7,5);
+gSciana.add(function(){
+  var m=new THREE.Mesh(new THREE.PlaneGeometry(2600,1800),
+    new THREE.MeshStandardMaterial({map:tP,roughness:0.78,metalness:0.02}));
+  m.rotation.x=-Math.PI/2; m.position.set(70,0,900); return m;}());
+
+/* ---- interakcja ---- */
+var ciag=false,lx=0,ly=0,pan=false;
+host.addEventListener('pointerdown',function(e){
+  ciag=true; pan=e.shiftKey||e.button===2; lx=e.clientX; ly=e.clientY;
+  if(host.setPointerCapture) host.setPointerCapture(e.pointerId);
+});
+host.addEventListener('pointermove',function(e){
+  if(!ciag) return;
+  var dx=e.clientX-lx, dy=e.clientY-ly; lx=e.clientX; ly=e.clientY;
+  if(pan){
+    var k=orb.r*0.0011;
+    CEL.y=Math.max(-400,Math.min(3200,CEL.y+dy*k));
+    CEL.x-=dx*k*Math.cos(orb.th); CEL.z+=dx*k*Math.sin(orb.th);
+  }else{
+    orb.th-=dx*0.006;
+    orb.ph=Math.max(0.10,Math.min(Math.PI-0.10,orb.ph-dy*0.006));
+  }
+  ustawKam();
+});
+['pointerup','pointercancel'].forEach(function(n){
+  host.addEventListener(n,function(){ciag=false;});
+});
+host.addEventListener('contextmenu',function(e){e.preventDefault();});
+host.addEventListener('wheel',function(e){
+  e.preventDefault();
+  orb.r=Math.max(200,Math.min(12000,orb.r*(1+Math.sign(e.deltaY)*0.11)));
+  ustawKam();
+},{passive:false});
+var pinch=0;
+host.addEventListener('touchmove',function(e){
+  if(e.touches.length!==2) return;
+  var dd=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,
+                    e.touches[0].clientY-e.touches[1].clientY);
+  if(pinch){orb.r=Math.max(200,Math.min(12000,orb.r*pinch/dd)); ustawKam();}
+  pinch=dd;
+},{passive:true});
+host.addEventListener('touchend',function(){pinch=0;});
+
+function przel(id,fn){
+  var b=document.getElementById(id);
+  b.addEventListener('click',function(){
+    var on=b.getAttribute('aria-pressed')!=='true';
+    b.setAttribute('aria-pressed',on?'true':'false'); fn(on);
+  });
+  return b;
+}
+przel('bSciana',function(on){gSciana.visible=on;});
+przel('bWkrety',function(on){gWkr.visible=on;});
+przel('bPerf',function(on){
+  kratka.traverse(function(m){
+    if(m.isMesh&&Array.isArray(m.material))
+      m.material.forEach(function(mm){
+        if(mm.alphaMap){mm.alphaTest=on?0.5:0; mm.needsUpdate=true;}
+      });
+  });
+});
+przel('bGora',function(on){
+  if(on){orb.r=430; orb.ph=1.30; orb.th=0.95; CEL.set(22,1215,72);}
+  else{orb.r=START.r; orb.ph=START.ph; orb.th=START.th; CEL.set(70,1215,45);}
+  ustawKam();
+});
+document.getElementById('bReset').addEventListener('click',function(){
+  orb.r=START.r; orb.th=START.th; orb.ph=START.ph;
+  CEL.set(70,1215,45); ustawKam();
+  document.getElementById('bGora').setAttribute('aria-pressed','false');
+});
+addEventListener('resize',function(){
+  kam.aspect=innerWidth/innerHeight; kam.updateProjectionMatrix();
+  ren.setSize(innerWidth,innerHeight);
+});
+(function petla(){ren.render(scena,kam); requestAnimationFrame(petla);})();
+el.remove();
+})();
+</script>
+
+</body>
+</html>
